@@ -99,17 +99,94 @@
             box-shadow: 2px 2px 3px darkgrey;
         }
 
+        .icon-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .stat-block{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-evenly;
+        }
+        .stat {
+            display: flex;
+            flex-direction: column;
+            min-width: 64px;
+            align-items: center;
+        }
+
+        .stat-value {
+            font-size: 26pt;
+        }
+
+        .stat-label {
+            font-size: 10pt;
+            color: #888;
+        }
+
+        .score-distribution {
+            width: 80%
+        }
+        
+        .score-distribution-row{
+            display: flex;
+            padding: 1px 0px;
+            height: 28px;
+            align-items: center;
+            flex: 1;
+        }
+        
+        .score-label{
+            width: 16px;
+            font-weight: bold;
+        }
+        
+        .score-bar {
+            min-width: 10px;
+            background-color: #ededed;
+            color: white;
+            width: 100%;
+            height: 100%;
+            display: flex;
+        }
+
+        .score-filled {
+            width: 50%;
+            background: #4caf50;
+            min-width: 20px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            padding: 5px;
+            justify-content: end;
+        }
+
         .modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1; /* Sit on top */
+            display: none;
+            position: fixed;
+            z-index: 1;
             left: 0;
             top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgb(0,0,0); /* Fallback color */
-            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.75);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 400px;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
         }
 
         .shaking {
@@ -144,13 +221,17 @@
 <body>
     <div class="main">
         <header>
-            <svg id="help" class="svg-icon" viewBox="0 0 24 24">
-                <path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"></path>
-            </svg>
+            <button id="help" class="icon-button" onclick="show_help()">
+                <svg class="svg-icon" viewBox="0 0 24 24">
+                    <path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"></path>
+                </svg>
+            </button>
             <h1 style="margin: 5px;">Vexle</h1>
-            <svg id="stats" class="svg-icon" viewBox="0 0 20 20">
-                <path d="M17.431,2.156h-3.715c-0.228,0-0.413,0.186-0.413,0.413v6.973h-2.89V6.687c0-0.229-0.186-0.413-0.413-0.413H6.285c-0.228,0-0.413,0.184-0.413,0.413v6.388H2.569c-0.227,0-0.413,0.187-0.413,0.413v3.942c0,0.228,0.186,0.413,0.413,0.413h14.862c0.228,0,0.413-0.186,0.413-0.413V2.569C17.844,2.342,17.658,2.156,17.431,2.156 M5.872,17.019h-2.89v-3.117h2.89V17.019zM9.587,17.019h-2.89V7.1h2.89V17.019z M13.303,17.019h-2.89v-6.651h2.89V17.019z M17.019,17.019h-2.891V2.982h2.891V17.019z"></path>
-            </svg>
+            <button id="stats" class="icon-button"  onclick="show_stats()">
+                <svg class="svg-icon" viewBox="0 0 20 20">
+                    <path d="M17.431,2.156h-3.715c-0.228,0-0.413,0.186-0.413,0.413v6.973h-2.89V6.687c0-0.229-0.186-0.413-0.413-0.413H6.285c-0.228,0-0.413,0.184-0.413,0.413v6.388H2.569c-0.227,0-0.413,0.187-0.413,0.413v3.942c0,0.228,0.186,0.413,0.413,0.413h14.862c0.228,0,0.413-0.186,0.413-0.413V2.569C17.844,2.342,17.658,2.156,17.431,2.156 M5.872,17.019h-2.89v-3.117h2.89V17.019zM9.587,17.019h-2.89V7.1h2.89V17.019z M13.303,17.019h-2.89v-6.651h2.89V17.019z M17.019,17.019h-2.891V2.982h2.891V17.019z"></path>
+                </svg>
+            </button>
         </header>
 
         <div class="fc">
@@ -179,22 +260,102 @@
         <canvas id="canvas-truth" class="flag-canvas" style="display: none;"></canvas>
     </div>
 
-    <div id="help" class="modal">
+    <div id="modal-help" class="modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
+            <!-- <span class="close">&times;</span> -->
             <p>Some text in the Modal..</p>
             <!-- <div>
-            1. Draw 3 coloured dots on the flag
+            1. Draw coloured dots on the flag to reveal details
             2. Guess the country
-            3. The guess will be marked
         </div> -->
         </div>
     </div>
 
-    <div id="stats" class="modal">
+    <div id="modal-stats" class="modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
-            <p>Some text in the Modal..</p>
+            <!-- <span class="close">&times;</span> -->
+            <div class="stat-block">
+                <div class="stat">
+                    <div class="stat-value" id="stat-games">?</div>
+                    <div class="stat-label">Games</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="stat-win">?</div>
+                    <div class="stat-label">Win %</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="stat-avg">?</div>
+                    <div class="stat-label">Avg</div>
+                </div>
+            </div>
+            
+            <div>
+                <div style="text-align: center; font-size: 19pt; padding-top: 16px;">
+                    Score Distribution
+                </div>
+                <div id="score-distribution">
+                    <div class="score-distribution-row">
+                        <div class="score-label">1</div>
+                        <div class="score-bar">
+                            <div class="score-filled">x</div>
+                        </div>
+                    </div>  
+                    <div class="score-distribution-row">
+                        <div class="score-label">2</div>
+                        <div class="score-bar">
+                            <div class="score-filled">x</div>
+                        </div>
+                    </div>  
+                    <div class="score-distribution-row">
+                        <div class="score-label">3</div>
+                        <div class="score-bar">
+                            <div class="score-filled">x</div>
+                        </div>
+                    </div>
+                    <div class="score-distribution-row">
+                        <div class="score-label">4</div>
+                        <div class="score-bar">
+                            <div class="score-filled">x</div>
+                        </div>
+                    </div>
+                    <div class="score-distribution-row">
+                        <div class="score-label">5</div>
+                        <div class="score-bar">
+                            <div class="score-filled">x</div>
+                        </div>
+                    </div>
+                    <div class="score-distribution-row">
+                        <div class="score-label">6</div>
+                        <div class="score-bar">
+                            <div class="score-filled">x</div>
+                        </div>
+                    </div>
+                    <div class="score-distribution-row">
+                        <div class="score-label">7</div>
+                        <div class="score-bar">
+                            <div class="score-filled">x</div>
+                        </div>
+                    </div>
+                    <div class="score-distribution-row">
+                        <div class="score-label">8</div>
+                        <div class="score-bar">
+                            <div class="score-filled">x</div>
+                        </div> 
+                    </div>
+                    <div class="score-distribution-row">
+                        <div class="score-label">9</div>
+                        <div class="score-bar">
+                            <div class="score-filled">x</div>
+                        </div>
+                    </div>
+                    <div class="score-distribution-row">
+                        <div class="score-label">X</div>
+                        <div class="score-bar">
+                            <div class="score-filled" style="background: red;">x</div>
+                        </div> 
+                    </div>  
+                </div>
+            </div>
         </div>
     </div>
 
@@ -229,6 +390,41 @@
         var cerror_ctx = cerror.getContext('2d');
         var ctruth_ctx = ctruth.getContext('2d');
         
+
+        var modal_help = document.getElementById('modal-help');
+        var modal_stat = document.getElementById('modal-stats');
+
+        function show_help(){
+            modal_help.style.display = "flex";
+        }
+
+        function show_stats(){
+            let stats = JSON.parse(localStorage.getItem('stats'));
+
+            let num_games = stats.reduce((a,b) => a+b);
+            let avg_score = stats.reduce((a,b,i) => a+b*(i+1), stats[0]) / num_games;
+            let win_pctag = (num_games - stats[stats.length-1]) / num_games;
+
+            document.getElementById('stat-games').innerHTML = num_games
+            document.getElementById('stat-win').innerHTML = (win_pctag * 100).toFixed(1)
+            document.getElementById('stat-avg').innerHTML = avg_score.toFixed(1)
+
+            let scores = document.querySelectorAll('#score-distribution .score-filled');
+
+            let m = Math.max(...stats)
+            for(let i=0; i<stats.length; i++){
+                scores[i].style.width = `${100*stats[i]/m}%`;
+                scores[i].innerHTML = stats[i];
+            }
+            modal_stat.style.display = "flex";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal_help || event.target == modal_stat ) {
+                event.target.style.display = "none";
+            }
+        }
+
         function run_anim(elem, anim){
             elem.classList.remove(anim); // reset animation
             void elem.offsetWidth;       // trigger reflow
@@ -281,7 +477,9 @@
             if (won) { 
                 confetti({particleCount: 200}); 
             }
+
             // TODO: open stats
+            show_stats()
         }
 
         document.getElementById('guess-button').onclick = function(e) {            
@@ -346,7 +544,7 @@
         }
 
         var now = new Date();
-        var day = Math.floor(now/8.64e7) - 30;
+        var day = Math.floor(now/8.64e7) - 29;
         var ans = flags[day % flags.length];
         var guess_number = 0;
         var max_guesses = 9;
