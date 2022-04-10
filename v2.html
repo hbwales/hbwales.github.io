@@ -454,7 +454,7 @@
         function show_stats(){
             modal_stat.classList.add('active');
 
-            let stats = JSON.parse(localStorage.getItem('stats'));
+            let stats = JSON.parse(localStorage.getItem('v2-stats'));
 
             let num_games = stats.reduce((a,b) => a+b);
             let avg_score = stats.reduce((a,b,i) => a+b*(i+1), stats[0]) / num_games;
@@ -494,9 +494,9 @@
             guess_number += 1;
 
             if (update_state) {
-                let state = JSON.parse(localStorage.getItem('state'));
+                let state = JSON.parse(localStorage.getItem('v2-state'));
                 state.guesses.push({type: 'guess', guess: country_name});
-                localStorage.setItem('state', JSON.stringify(state));
+                localStorage.setItem('v2-state', JSON.stringify(state));
             }
 
             if (country_name === ans.name) {
@@ -507,9 +507,9 @@
         }
 
         function game_over(won, update_stats){
-            let state = JSON.parse(localStorage.getItem('state'));
+            let state = JSON.parse(localStorage.getItem('v2-state'));
             state.status = 'DONE';
-            localStorage.setItem('state', JSON.stringify(state));
+            localStorage.setItem('v2-state', JSON.stringify(state));
 
             // ctruth.style.display = ''
             guess_box.disabled = true;
@@ -520,9 +520,9 @@
             cguess.removeEventListener('touchstart', draw_dot_touch, false);
 
             if (update_stats) {
-                let stats = JSON.parse(localStorage.getItem('stats'));
+                let stats = JSON.parse(localStorage.getItem('v2-stats'));
                 stats[guess_number-1*won] += 1
-                localStorage.setItem('stats', JSON.stringify(stats));
+                localStorage.setItem('v2-stats', JSON.stringify(stats));
             }
             
             if (won) { 
@@ -559,9 +559,9 @@
 
         function draw_dot(x, y, rad, colour, update_state){
             if (update_state) {
-                let state = JSON.parse(localStorage.getItem('state'));
+                let state = JSON.parse(localStorage.getItem('v2-state'));
                 state.guesses.push({type: 'dot', x:x, y:y, r:rad, c: colour});
-                localStorage.setItem('state', JSON.stringify(state));
+                localStorage.setItem('v2-state', JSON.stringify(state));
             }
 
             let w = cguess.width;
@@ -595,17 +595,17 @@
         }
 
         function setup_game(){            
-            let stats = JSON.parse(localStorage.getItem('stats'));
+            let stats = JSON.parse(localStorage.getItem('v2-stats'));
             if (!stats){ 
-                localStorage.setItem('stats', JSON.stringify([0,0,0,0,0,0,0,0,0,0]));
+                localStorage.setItem('v2-stats', JSON.stringify([0,0,0,0,0,0,0,0,0,0]));
             }
             
-            let state = JSON.parse(localStorage.getItem('state'));
+            let state = JSON.parse(localStorage.getItem('v2-state'));
             let img = new Image()
 
-            if (1==1 /*!state || state.day != day*/){
+            if (!state || state.day != day){
                 // Setup new game  
-                localStorage.setItem('state', JSON.stringify({day: day, answer: ans.code, guesses:[]}) ); 
+                localStorage.setItem('v2-state', JSON.stringify({day: day, answer: ans.code, guesses:[]}) ); 
                 img.onload = function() { resize_images(img) }
                 img.src = ans.data; // this is async..
 
