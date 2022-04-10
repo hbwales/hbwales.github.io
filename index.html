@@ -96,10 +96,10 @@
             width: 20px;
             height: 20px;
             background-color: white;
-            border-radius: 50%;
-            border: 1px solid black;
-            box-shadow: 2px 2px 3px darkgrey;
-        }
+            /* border-radius: 50%; */
+            border: 2px solid black;
+            /* box-shadow: 2px 2px 3px darkgrey; */
+        /* box-shadow: 0 0 1px 0px white inset, 0 0 1px 0px white; */}
 
         .icon-button {
             background: none;
@@ -120,7 +120,7 @@
         }
 
         .stat-value {
-            font-size: 26pt;
+            font-size: 32px;
         }
 
         .stat-label {
@@ -135,7 +135,7 @@
         .score-distribution-row{
             display: flex;
             padding: 1px 0px;
-            height: 28px;
+            height: 20px;
             align-items: center;
             flex: 1;
         }
@@ -214,12 +214,12 @@
         .modal-content {
             background-color: #fefefe;
             padding: 20px;
-            border: 1px solid #888;
+            border: 1px solid #eee;
             width: 100%;
             display: flex;
             flex-direction: column;
             min-height: 150px;
-        }
+        border-radius: 8px;box-shadow: 0 20px 25px -5px rgba(0,0,0,.15),0 10px 10px -5px rgba(0,0,0,.1);}
 
         .modal.active, .modal.active .modal-container {
             visibility: visible;
