@@ -8,7 +8,7 @@
 
     <meta property="og:title" content="Vexle - Guess the flag" />
     <meta property="og:description" content="Guess the country by drawing the flag" />
-    <!-- <meta property="og:image" content="https://ahrefs.com/blog/wp-content/uploads/2019/12/fb-how-to-become-an-seo-expert.png" /> -->
+    <!-- <meta property="og:image" content="https:..." /> -->
 
     <link rel="icon" type="image/png" sizes="16x16" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAQhJREFUOE9jZGBgYFi+9bA5I9N/uwhP2x4GBsb/IDF0oKXlwMPE+UucnYHx99mzR58wMDD8A6lhBBHLNu9dfe/+g5Atq5dP/vHr+2aGf/9f/2diFWT+/0/7HyODOSMDgwUDA4MyTP1/BoZ3DAz/6y6cPDIVbMC8NTvWnjlzKuj4/t3YLMcq9v///1UXTh0JHzVgeIXBrdu3g/ZsWffw758/8kgR/5aB4f8pBgbGE4yM/8//YWB8yvzvLzsDE5Pp/7+M3y+cPjwbng5evX0XxPqHUW7ZvJ7vf1m4Bf99//Px0qVjrwilLAwDirMjHxPShCw/SAyYsGBd4/ef31N//mFVa8gO+0KKFwBAdOkRoe5E/gAAAABJRU5ErkJggg==">
 
@@ -263,11 +263,7 @@
     <div id="modal-help" class="modal">
         <div class="modal-content">
             <!-- <span class="close">&times;</span> -->
-            <p>Some text in the Modal..</p>
-            <!-- <div>
-            1. Draw coloured dots on the flag to reveal details
-            2. Guess the country
-        </div> -->
+            <p>Guess the flag by drawing it</p>
         </div>
     </div>
 
@@ -365,7 +361,6 @@
         // TODO: clear dropdown on click
         // TODO: alredy solved: 
         //      - countdown to next flag
-        //      - stats popup
         // TODO: https://stackoverflow.com/questions/54256629/countdown-to-midnight-refresh-every-day
 
         // Flag Data (https://github.com/hampusborgos/country-flags)
@@ -380,6 +375,7 @@
         
         var ink_color = document.getElementById('ink-color');
         var guess_box = document.getElementById('country-select');
+        var guess_btn = document.getElementById('guess-button');
         var dots = document.querySelectorAll('#ink-controls div.dot');
 
         var cguess = document.getElementById('canvas-guess');
@@ -390,9 +386,27 @@
         var cerror_ctx = cerror.getContext('2d');
         var ctruth_ctx = ctruth.getContext('2d');
         
-
         var modal_help = document.getElementById('modal-help');
         var modal_stat = document.getElementById('modal-stats');
+
+        var now = new Date();
+        var day = Math.floor(now/8.64e7) - 29;
+        var ans = flags[day % flags.length];
+        var guess_number = 0;
+        var max_guesses = 9;
+
+        guess_btn.onclick = make_guess
+
+        function draw_dot_touch(evt) {evt.preventDefault(); draw_dot(evt.touches[0]);}
+
+        cguess.addEventListener('click',      draw_dot_click, false);
+        cguess.addEventListener('touchstart', draw_dot_touch, false);
+
+        window.onclick = function(event) {
+            if (event.target == modal_help || event.target == modal_stat ) {
+                event.target.style.display = "none";
+            }
+        }
 
         function show_help(){
             modal_help.style.display = "flex";
@@ -419,19 +433,13 @@
             modal_stat.style.display = "flex";
         }
 
-        window.onclick = function(event) {
-            if (event.target == modal_help || event.target == modal_stat ) {
-                event.target.style.display = "none";
-            }
-        }
-
         function run_anim(elem, anim){
             elem.classList.remove(anim); // reset animation
             void elem.offsetWidth;       // trigger reflow
             elem.classList.add(anim);    // start animation
         }
 
-        function score_drawing(a, b){
+        function image_diff(a, b){
             let out = new Uint8ClampedArray(a.length); 
             for(i=0; i<a.length; i+=4){
                 //https://en.wikipedia.org/wiki/Color_difference
@@ -451,7 +459,7 @@
             return out;
         }
 
-        function check_guess(country_name){
+        function check_guess(country_name, update_state){
             if (country_name === ans.name) {
                 dots[guess_number].style['backgroundColor'] = '#09ff00'
             } else {
@@ -461,16 +469,38 @@
             }
             run_anim(dots[guess_number], 'pulsing');
             guess_number += 1;
+
+            if (update_state) {
+                let state = JSON.parse(localStorage.getItem('state'));
+                state.guesses.push({type: 'guess', guess: country_name});
+                localStorage.setItem('state', JSON.stringify(state));
+            }
+
+            if (country_name === ans.name) {
+                game_over(true, update_state);
+            } else if (guess_number >= max_guesses){
+                game_over(false, update_state);
+            }
         }
 
-        function game_over(won){
+        function game_over(won, update_stats){
             let state = JSON.parse(localStorage.getItem('state'));
             state.status = 'DONE';
             localStorage.setItem('state', JSON.stringify(state));
 
-            let stats = JSON.parse(localStorage.getItem('stats'));
-            stats[guess_number] += 1
-            localStorage.setItem('stats', JSON.stringify(stats));
+            ctruth.style.display = ''
+            guess_box.disabled = true;
+            guess_btn.disabled = true;
+            guess_box.value = ans.name;
+            cguess.style.cursor = 'not-allowed';
+            cguess.removeEventListener('click',      draw_dot_click, false);
+            cguess.removeEventListener('touchstart', draw_dot_touch, false);
+
+            if (update_stats) {
+                let stats = JSON.parse(localStorage.getItem('stats'));
+                stats[guess_number-1] += 1
+                localStorage.setItem('stats', JSON.stringify(stats));
+            }
             
             ctruth.style.display = ''
             document.getElementById('guess-button').removeAttribute("onclick");
@@ -478,11 +508,10 @@
                 confetti({particleCount: 200}); 
             }
 
-            // TODO: open stats
             show_stats()
         }
 
-        document.getElementById('guess-button').onclick = function(e) {            
+        function make_guess(){       
             // TODO: toast
             let country_name = guess_box.value
             if (country_name === ''){
@@ -490,41 +519,26 @@
                 return;
             }
 
-            check_guess(country_name)
-
-            let state = JSON.parse(localStorage.getItem('state'));
-            state.guesses.push({type: 'guess', guess: country_name});
-            localStorage.setItem('state', JSON.stringify(state));
-
-            if (country_name === ans.name) {
-                game_over(true);
-            } else if (guess_number > max_guesses){
-                game_over(false);
-            }
+            check_guess(country_name, true)
         };
 
-        cguess.addEventListener('click',      evt => draw_dot(evt), false );
-        cguess.addEventListener('touchstart', evt => {evt.preventDefault(); draw_dot(evt.touches[0]);}, false);
-
-        function draw_dot(evt){
+        function draw_dot_click(evt){
             let rect = cguess.getBoundingClientRect();
             let x = (evt.clientX - rect.left) / (rect.right - rect.left) * cguess.width;
             let y = (evt.clientY - rect.top) / (rect.bottom - rect.top) * cguess.height;
             let rad = 16 * rect.width / cguess.width;
             let colour = ink_color.value;
             
-            draw_dot_at(x, y, rad, colour);
-            
-            let state = JSON.parse(localStorage.getItem('state'));
-            state.guesses.push({type: 'dot', x:x, y:y, r:rad, c: colour});
-            localStorage.setItem('state', JSON.stringify(state));
-
-            if (guess_number > max_guesses) {
-                game_over(false);
-            }
+            draw_dot(x, y, rad, colour, true);
         }
 
-        function draw_dot_at(x, y, rad, colour){
+        function draw_dot(x, y, rad, colour, update_state){
+            if (update_state) {
+                let state = JSON.parse(localStorage.getItem('state'));
+                state.guesses.push({type: 'dot', x:x, y:y, r:rad, c: colour});
+                localStorage.setItem('state', JSON.stringify(state));
+            }
+
             cguess_ctx.beginPath();
             cguess_ctx.fillStyle = colour;
             cguess_ctx.arc(x, y, rad, 0, 2*Math.PI);
@@ -535,19 +549,17 @@
 
             let a = ctruth_ctx.getImageData(0, 0, w, h);
             let b = cguess_ctx.getImageData(0, 0, w, h);
-            let c = new ImageData(score_drawing(a.data, b.data), w, h);
+            let c = new ImageData(image_diff(a.data, b.data), w, h);
             cerror_ctx.putImageData(c, 0, 0);
 
             dots[guess_number].style['backgroundColor'] = '#ffcf00'
             run_anim(dots[guess_number], 'pulsing');
             guess_number += 1;
-        }
 
-        var now = new Date();
-        var day = Math.floor(now/8.64e7) - 29;
-        var ans = flags[day % flags.length];
-        var guess_number = 0;
-        var max_guesses = 9;
+            if (guess_number >= max_guesses) {
+                game_over(false, update_state);
+            }
+        }
 
         function resize_images(img){
             ctruth.width = img.width;
@@ -585,18 +597,12 @@
                     
                     for (const g of state.guesses){
                         if (g.type == 'dot'){
-                            draw_dot_at(g.x, g.y, g.r, g.c);
+                            draw_dot(g.x, g.y, g.r, g.c, false);
                         } else {
-                            check_guess(g.guess);
+                            check_guess(g.guess, false);
                         }
                     }
-
-                    if (state && state.status === 'DONE'){
-                        ctruth.style.display = ''
-                        document.getElementById('guess-button').removeAttribute("onclick");
-                    }
                 }
-
                 img.src = ans.data; // this is async..
             }
         }
