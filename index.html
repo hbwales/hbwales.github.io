@@ -498,7 +498,7 @@
 
             if (update_stats) {
                 let stats = JSON.parse(localStorage.getItem('stats'));
-                stats[guess_number-1] += 1
+                stats[guess_number-1*won] += 1
                 localStorage.setItem('stats', JSON.stringify(stats));
             }
             
