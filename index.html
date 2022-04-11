@@ -28,6 +28,8 @@
             font-family: Lato,'Helvetica Neue',Arial,Helvetica,sans-serif;
         }
 
+        h3 { margin: 0px;}
+
         .fc {
             display: flex;
             flex-direction: column;
@@ -343,7 +345,6 @@
                 </div>
                 
                 <div>
-                    <!-- Easy Mode | Hard Mode -->
                     <div style="text-align: center; font-size: 19pt; padding-top: 16px;">
                         Score Distribution
                     </div>
@@ -668,6 +669,7 @@
             let stats = JSON.parse(localStorage.getItem(`vx-${mode}-stats`));
             if (!stats){ 
                 localStorage.setItem(`vx-${mode}-stats`, JSON.stringify([0,0,0,0,0,0,0,0,0,0]));
+                show_help();
             }
 
             guess_number = 0;
